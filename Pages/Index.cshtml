@@ -1,0 +1,47 @@
+﻿@page
+@model IndexModel
+@{
+    ViewData["Title"] = "Markdown rendering with Beautifying";
+}
+@section scripts {
+<script type="text/javascript" src="~/lib/showdown/showdown.js" asp-append-version="true"></script>
+<script type="text/javascript" src="~/js/index.js" asp-append-version="true"></script>
+}
+
+<div>
+    <h2>Input</h2>
+    <p>
+        <textarea id="inputTextArea" rows="15" max-rows="30" style="width:100%">
+# Titre
+Une petite question ?
+10 €
+100 €
+1000 €
+10000 €
+100000 €
+1000000 €
+Voici 10€
+Voici 100€
+Voici 1000€
+Voici 10000€
+Voici 100000€
+Voici 1000000€
+Avec virgule : 1234,4568 €
+Avec point : 1234.4568 €
+Nombre contenant déjà un séparateur nbsp : 1&nbsp;234 €
+Nombre contenant déjà deux séparateurs nbsp : 1&nbsp000&nbsp;234 €
+Nombre contenant déjà un séparateur espace : 1 234 €
+Nombre contenant déjà deux séparateurs espace : 1 000 234 €
+Plusieurs nombres dans la même ligne : 1000 ml, 10000 ml, 100000 ml, 1000000 ml, 10000000 ml
+https://www.google.com/search?q=%22javascript%22&sxsrf=ALiCzsbRIobu3xxaBH8wJBdwxbHcvE21KQ%3A1654379567179&ei=L9S
+        </textarea>
+    </p>
+    <p>
+        <button onclick="buttonClicked();">Render</button>
+    </p>
+
+    <h2>Rendered</h2>
+    <p>
+        <div id="renderedDiv" style="border-style:solid;border-width:1px;"></div>
+    </p>
+</div>
