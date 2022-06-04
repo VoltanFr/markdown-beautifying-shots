@@ -35,6 +35,10 @@ function insertThousandSeparatorsWhenBlankBefore(wholeMatch, blank, number) {
     return blank + value;
 }
 
+function replaceSpaceWithNbsp(wholeMatch, space, symbol) {
+    return "&nbsp;" + symbol;
+}
+
 function beautifyTextForFrench(src) {
     // This is specific for French
     // We must not modify text:
@@ -51,10 +55,12 @@ function beautifyTextForFrench(src) {
     result = result.replace(/^(\d+)/g, insertThousandSeparatorsWhenStartOfInput);
 
     // White space before punctuation becomes nbsp
-    result = result.replace(/\s\?/g, '&nbsp;?');
-    result = result.replace(/\s!/g, '&nbsp;!');
-    result = result.replace(/\s;/g, '&nbsp;;');
-    result = result.replace(/\s:/g, '&nbsp;:');
+    result = result.replace(/( )(\?|!|;|:)/g, replaceSpaceWithNbsp);
+
+    //result = result.replace(/\s\?/g, '&nbsp;?');
+    //result = result.replace(/\s!/g, '&nbsp;!');
+    //result = result.replace(/\s;/g, '&nbsp;;');
+    //result = result.replace(/\s:/g, '&nbsp;:');
 
     return result;
 }
