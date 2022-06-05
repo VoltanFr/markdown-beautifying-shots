@@ -18,7 +18,9 @@ function valueWithThousandSeparators(number)  // number is a string
     var value = Number(number);
     if (value == NaN) // We could decide not to convert a number < 2100 since we can suspect it is a year
         return null;
-    return value.toLocaleString().replace(" ", "&nbsp;");
+    let result = value.toLocaleString('fr-FR');
+    result = result.replace(' ', '&nbsp;');
+    return result;
 }
 
 function insertThousandSeparatorsWhenStartOfInput(wholeMatch, number) {
