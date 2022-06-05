@@ -39,6 +39,9 @@ function insertThousandSeparatorsWhenBlankBefore(wholeMatch, blank, number) {
 function replaceSpaceWithNbsp(_wholeMatch, _space, symbol) {
     return `&nbsp;${symbol}`;
 }
+
+function replaceNumberAndSpaceWithNbsp(_wholeMatch, number, _space, symbol) {
+    return `${number}&nbsp;${symbol}`;
 }
 
 function beautifyTextForFrench(src) {
@@ -59,6 +62,8 @@ function beautifyTextForFrench(src) {
     // White space before punctuation becomes nbsp
     result = result.replace(/( )(\?|!|;|:)/g, replaceSpaceWithNbsp);
 
+    // Digit and white space before unit becomes nbsp
+    result = result.replace(/(\d)( )(€|mm|cm|dm|m|km|l|L|hl|bar|h\/km²)/g, replaceNumberAndSpaceWithNbsp);
 
     return result;
 }
