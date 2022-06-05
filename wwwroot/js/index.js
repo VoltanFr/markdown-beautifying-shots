@@ -13,10 +13,9 @@ function convertMarkdown(src) {
     return converter.makeHtml(src);
 }
 
-function valueWithThousandSeparators(number)  // number is a string 
-{
-    var value = Number(number);
-    if (value == NaN) // We could decide not to convert a number < 2100 since we can suspect it is a year
+function valueWithThousandSeparators(number) { // number is a string
+    const value = Number(number);
+    if (isNaN(value)) // We could decide not to convert a number < 2100 since we can suspect it is a year
         return null;
     let result = value.toLocaleString('fr-FR');
     result = result.replace(' ', '&nbsp;');
@@ -24,21 +23,22 @@ function valueWithThousandSeparators(number)  // number is a string
 }
 
 function insertThousandSeparatorsWhenStartOfInput(wholeMatch, number) {
-    var value = valueWithThousandSeparators(number);
-    if (value == null || value == 0)
+    const value = valueWithThousandSeparators(number);
+    if (value === null || value === 0)
         return wholeMatch;
     return value;
 }
 
 function insertThousandSeparatorsWhenBlankBefore(wholeMatch, blank, number) {
-    var value = valueWithThousandSeparators(number);
-    if (value == null || value == 0)
+    const value = valueWithThousandSeparators(number);
+    if (value === null || value === 0)
         return wholeMatch;
     return blank + value;
 }
 
-function replaceSpaceWithNbsp(wholeMatch, space, symbol) {
-    return "&nbsp;" + symbol;
+function replaceSpaceWithNbsp(_wholeMatch, _space, symbol) {
+    return `&nbsp;${symbol}`;
+}
 }
 
 function beautifyTextForFrench(src) {
@@ -59,14 +59,9 @@ function beautifyTextForFrench(src) {
     // White space before punctuation becomes nbsp
     result = result.replace(/( )(\?|!|;|:)/g, replaceSpaceWithNbsp);
 
-    //result = result.replace(/\s\?/g, '&nbsp;?');
-    //result = result.replace(/\s!/g, '&nbsp;!');
-    //result = result.replace(/\s;/g, '&nbsp;;');
-    //result = result.replace(/\s:/g, '&nbsp;:');
 
     return result;
 }
-
 
 function buttonClicked() {
     const inputTextArea = document.getElementById('inputTextArea');
