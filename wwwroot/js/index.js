@@ -1,37 +1,28 @@
-﻿//Resources:
-//- https://github.com/showdownjs/showdown/blob/master/docs/event_system.md
-//- https://github.com/showdownjs/showdown/issues/518
-//- https://github.com/showdownjs/showdown/issues/908
-
-function convertMarkdown(src) {
-    var converter = new showdown.Converter({ tables: true, extensions: [] });
-    converter.setOption('openLinksInNewWindow', 'true');
-    converter.setOption('simplifiedAutoLink', 'true');
-    converter.setOption('simpleLineBreaks', 'true');
-    converter.setOption('noHeaderId', 'true');
-    converter.setOption('extensions', 'replaceHeader');
-    return converter.makeHtml(src);
-}
+﻿'use strict';
 
 function valueWithThousandSeparators(number) { // number is a string
     const value = Number(number);
-    if (isNaN(value)) // We could decide not to convert a number < 2100 since we can suspect it is a year
+    if (isNaN(value))
+        return null;
+    if (value === 0) // We don't want to transform '000' to '0', for example
+        return null;
+    if (value > -6000 && value < 2200) // This might be a year, which doesn't take a thousand separator
         return null;
     let result = value.toLocaleString('fr-FR');
-    result = result.replace(' ', '&nbsp;');
+    result = result.replace(/\s/g, '&nbsp;');
     return result;
 }
 
 function insertThousandSeparatorsWhenStartOfInput(wholeMatch, number) {
     const value = valueWithThousandSeparators(number);
-    if (value === null || value === 0)
+    if (value === null)
         return wholeMatch;
     return value;
 }
 
 function insertThousandSeparatorsWhenBlankBefore(wholeMatch, blank, number) {
     const value = valueWithThousandSeparators(number);
-    if (value === null || value === 0)
+    if (value === null)
         return wholeMatch;
     return blank + value;
 }
@@ -45,27 +36,37 @@ function replaceNumberAndSpaceWithNbsp(_wholeMatch, number, _space, symbol) {
 }
 
 function beautifyTextForFrench(src) {
-    // This is specific for French
-    // We must not modify text:
-    //  - in an URL (which we want to support as '<>' and '[]()')
-    //  - in a quote with backslashes
-    //  - probably in some sorts of block quotes (to be clarified)
-    // Embedded HTML is to be considered. Did not dig, but I suspect there will be problems.
-    // Right now we just take care not to replace in hyperlinks, based on the fact that an hyperlink can not contain a space
+    // This code is not very great: ideally, we should use a real parser to analyze the text and not modify anything in an hyperlink's URL, a backslashed quote, block quotes, and probably embedded HTML.
+    // However, I don't have such an implementation now (and I suspect it would be near-impossible, since Markdown is quite ambiguous and not BNF).
+    // Fortunately, we don't need to deal with all possible uses of Markdown, but only with MemCheck. So this implementation relies on the presence of a space char, which proves that we are not in an URL.
+    // The biggest problem here is we insert thousand separators in years, which is wrong. I don't know yet how to solve that (eg question: "Combien de ml dans un l ?", answer: "1000").
 
     let result = src;
 
-    // Insert thousand separators
-    result = result.replace(/(\s)(\d+)/g, insertThousandSeparatorsWhenBlankBefore);
+    // Insert thousand separators when we find a number after a space, or a space and a parenthesis
+    result = result.replace(/(\s\(?)(\d+)/g, insertThousandSeparatorsWhenBlankBefore);
+
+    // Insert thousand separators when we find a number at the begining of the text
     result = result.replace(/^(\d+)/g, insertThousandSeparatorsWhenStartOfInput);
 
     // White space before punctuation becomes nbsp
     result = result.replace(/( )(\?|!|;|:)/g, replaceSpaceWithNbsp);
 
     // Digit and white space before unit becomes nbsp
-    result = result.replace(/(\d)( )(€|mm|cm|dm|m|km|l|L|hl|bar|h\/km²)/g, replaceNumberAndSpaceWithNbsp);
+    result = result.replace(/(\d)( )(€|mm|cm|dm|m|km|l|L|hl|bar|h\/km²|°|%)/g, replaceNumberAndSpaceWithNbsp);
 
     return result;
+}
+
+/* exported convertMarkdown */
+function convertMarkdown(src, beautifyForFrench) {
+    const actualText = beautifyForFrench ? beautifyTextForFrench(src) : src;
+    const converter = new showdown.Converter({ tables: true });
+    converter.setOption('openLinksInNewWindow', 'true');
+    converter.setOption('simplifiedAutoLink', 'true');
+    converter.setOption('simpleLineBreaks', 'true');
+    converter.setOption('noHeaderId', 'true');  // For size gain, even if minor
+    return converter.makeHtml(actualText);
 }
 
 function buttonClicked() {
