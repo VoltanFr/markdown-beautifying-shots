@@ -1,0 +1,14 @@
+{
+  "name": "markdown-beautifying-shots",
+  "version": "1.0.0",
+  "type": "module",
+  "devDependencies": {
+    "jest": "^28.1.1"
+  },
+  "resolutions": {
+    "graceful-fs": "4.2.4"
+  },
+  "scripts": {
+    "test": "jest"
+  }
+}

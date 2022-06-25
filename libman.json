@@ -6,6 +6,11 @@
       "provider": "cdnjs",
       "library": "showdown@2.1.0",
       "destination": "wwwroot/lib/showdown/"
+    },
+    {
+      "provider": "unpkg",
+      "library": "jest@28.1.1",
+      "destination": "wwwroot/lib/jest/"
     }
   ]
 }
